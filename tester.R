@@ -23,5 +23,5 @@ people = pblapply(url, get_bios)
 saveRDS(people, "people.rds")
 people = bind_rows(people)
 timeline = people %>% group_by(subject, newyear) %>% summarise(num = n()) %>%
-  ungroup()
-ggplot(timeline, aes(x = newyear, y = num, fill = subject)) + geom_area(stat = "smooth")
+  ungroup() %>% mutate(subject = factor(subject))
+ggplot(timeline[timeline$subject == "Christianity",], aes(x = newyear, y = num, fill = subject)) + geom_bar(stat = "identity", position = "stack")
