@@ -83,7 +83,7 @@ get_links = function(url){
 get_people = function(wikipage){
   vcard = NULL
   url = paste0("https://en.wikipedia.org/wiki/", wikipage)
-  print(url)
+  #print(url)
   webpage <- try(read_html(url))
   if(class(webpage) != "try-error"){
     table <- webpage %>%
@@ -109,17 +109,17 @@ format_dates = function(formatted_people){
   formatted_people$date[pos] = before_christ_date(formatted_people$info[pos])
   pos = is.na(formatted_people$date)
   formatted_people$date[pos] = circa_date(formatted_people$info[pos])
+  formatted_people = formatted_people %>% filter(!is.na(date)) %>% select(-info) %>% ungroup()
   return(formatted_people)
 }
 
-quality_assurance = function(formatted_poeple){
-  formatted_people = formatted_people %>% filter(complete.cases(date)) %>% select(-info) %>% spread(descr, date)
+quality_assurance = function(formatted_people){
+  formatted_people = formatted_people %>% tidyr::spread(descr, date)
   formatted_people$Died[is.na(formatted_people$Died)] = lubridate::today()
   formatted_people$Born[is.na(formatted_people$Born)] = formatted_people$Died[is.na(formatted_people$Born)] - lubridate::years(50)
   formatted_people$age = round((formatted_people$Died - formatted_people$Born)/365, 0)
   formatted_people = formatted_people %>% filter(age < 150) %>% select(-age) %>% gather(descr, date, -person)
   formatted_people$newyear = as.Date(paste0(lubridate::year(formatted_people$date), "-01-01"))
-  formatted_people = formatted_people %>% select(-date) %>% group_by(person) %>% pad(interval = "year") %>% ungroup() %>%
-    select(-descr)
+  formatted_people = formatted_people %>% select(-date) %>% group_by(person) %>% pad(interval = "year") %>% ungroup() 
   return(formatted_people)
 }
