@@ -6,7 +6,7 @@ library(padr)
 source("libs.R")
 get_bios = function(url){
   links = get_links(url)
-  people = lapply(links[1:50], get_people)
+  people = lapply(links, get_people)
   formatted_people = people[!sapply(people, is.null, simplify = T)]
   formatted_people = bind_rows(formatted_people, .id = "person") %>%
     filter(descr %in% c("Born", "Died")) %>% select(1:3)
