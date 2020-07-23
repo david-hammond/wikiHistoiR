@@ -84,7 +84,7 @@ get_people = function(wikipage){
   vcard = NULL
   url = paste0("https://en.wikipedia.org/wiki/", wikipage)
   #print(url)
-  webpage <- try(read_html(url))
+  webpage <- try(read_html(url), silent=TRUE)
   if(class(webpage) != "try-error"){
     table <- webpage %>%
       html_nodes(xpath='//*[@class="infobox biography vcard"]') %>%
